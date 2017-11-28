@@ -8,6 +8,11 @@ class Square {
     int x;
     int y;
     Color color;
+    private int redTotal = 0;
+    private int greenTotal = 0;
+    private int blueTotal = 0;
+    private int numCombinedColors = 0;
+
     Square getLeftNeighbor() {
         return leftNeighbor;
     }
@@ -40,30 +45,30 @@ class Square {
         this.bottomNeighbor = bottomNeighbor;
     }
 
-    void removeLeftNeighbor(){
+    void removeLeftNeighbor() {
         this.leftNeighbor = null;
     }
 
-    void removeRightNeighbor(){
+    void removeRightNeighbor() {
         this.rightNeighbor = null;
     }
 
-    void removeTopNeighbor(){
+    void removeTopNeighbor() {
         this.topNeighbor = null;
     }
 
-    void removeBottomNeighbor(){
+    void removeBottomNeighbor() {
         this.bottomNeighbor = null;
     }
 
-    void addColor(Color colorToAdd){
-        if(color == null){
-            color = colorToAdd;
-            return;
-        }
-        int red = (color.getRed() + colorToAdd.getRed())/2;
-        int green = (color.getGreen() + colorToAdd.getGreen())/2;
-        int blue = (color.getBlue() + colorToAdd.getBlue())/2;
+    void addColor(Color colorToAdd) {
+        numCombinedColors++;
+        redTotal += colorToAdd.getRed();
+        greenTotal += colorToAdd.getGreen();
+        blueTotal += colorToAdd.getBlue();
+        int red = redTotal / numCombinedColors;
+        int green = greenTotal / numCombinedColors;
+        int blue = blueTotal / numCombinedColors;
         color = new Color(red, green, blue);
     }
 

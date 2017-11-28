@@ -13,8 +13,8 @@ public class Game extends JPanel implements ActionListener {
     private int squareSize;
     private int ticksBetweenSearchMoves;
     private int ticksTilSearchMove;
+    private Search[] searches;
     Player player;
-    Search[] searches;
     Timer timer;
     Game(int viewWidth, int viewHeight) {
         this.viewWidth = viewWidth;
@@ -30,24 +30,44 @@ public class Game extends JPanel implements ActionListener {
         this.squares = mapGenerator.generateMap();
         this.player = new Player(squares[height / 2][width / 2]);
         this.searches = new Search[]{
-                new Search(SearchType.BFS, squares[0][0], DirectionPriority.DOWN_THEN_RIGHT, new Color(178, 249, 181)),
-                new Search(SearchType.DFS, squares[0][width - 1], DirectionPriority.DOWN_THEN_LEFT, new Color(248, 165, 228)),
-                new Search(SearchType.DFS, squares[height - 1][0], DirectionPriority.RIGHT_THEN_UP, new Color(169, 159, 249)),
-                new Search(SearchType.BFS, squares[height - 1][width - 1], DirectionPriority.LEFT_THEN_UP, new Color(248, 162, 162))
+                new Search(SearchType.BFS, squares[0][0], DirectionPriority.RIGHT_THEN_DOWN),
+                new Search(SearchType.DFS, squares[0][width - 1], DirectionPriority.LEFT_THEN_DOWN),
+                new Search(SearchType.DFS, squares[height - 1][0], DirectionPriority.RIGHT_THEN_UP),
+                new Search(SearchType.BFS, squares[height - 1][width - 1], DirectionPriority.LEFT_THEN_UP)
         };
         this.ticksBetweenSearchMoves = (int) (((double) Parameters.searchDelay) / Parameters.tickDelay);
         this.ticksTilSearchMove = 0;
         this.timer = new Timer(Parameters.tickDelay, this);
         timer.start();
     }
+    private void updateGame() {
+        for (Search search : searches) {
+            int x = search.currentPosition.x;
+            int y = search.currentPosition.y;
+            int xPlayer = player.currentPosition.x;
+            int yPlayer = player.currentPosition.y;
+            if (x == xPlayer && y == yPlayer) {
+                //timer.stop();
+                System.out.println("you were found by a " + search.searchType);
+            }
+        }
 
+        ticksTilSearchMove--;
+        if (ticksTilSearchMove <= 0) {
+            ticksTilSearchMove = ticksBetweenSearchMoves;
+            for (Search search : searches) {
+                int x = search.currentPosition.x;
+                int y = search.currentPosition.y;
+                squares[y][x].addColor(search.visitedColor);
+            }
+            for (Search search : searches) {
+                search.move();
+            }
+        }
+    }
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        updateGame(g);
-    }
-
-    private void updateGame(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setColor(Parameters.mapColor);
         g2d.fillRect(0, 0, Parameters.mapWidth, Parameters.mapHeight);
@@ -65,30 +85,6 @@ public class Game extends JPanel implements ActionListener {
 //        }
         Toolkit.getDefaultToolkit().sync();
         g2d.dispose();
-
-        for (Search search : searches) {
-            int x = search.currentPosition.x;
-            int y = search.currentPosition.y;
-            int xPlayer = player.currentPosition.x;
-            int yPlayer = player.currentPosition.y;
-            if (x == xPlayer && y == yPlayer) {
-                timer.stop();
-                System.out.println("you were found by a " + search.searchType);
-            }
-        }
-
-        ticksTilSearchMove--;
-        if (ticksTilSearchMove <= 0) {
-            ticksTilSearchMove = ticksBetweenSearchMoves;
-            for (Search search : searches) {
-                int x = search.currentPosition.x;
-                int y = search.currentPosition.y;
-                squares[y][x].addColor(search.visitedColor);
-            }
-            for (Search search : searches) {
-                search.move();
-            }
-        }
     }
     private void drawSquares(Graphics2D g2d){
         for (int i = 0; i < this.height; i++) {
@@ -145,5 +141,6 @@ public class Game extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         repaint();
+        updateGame();
     }
 }

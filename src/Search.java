@@ -10,11 +10,19 @@ class Search {
     Color visitedColor;
     private HashSet<Square> visited;
     private LinkedList<Square> queue;
-    Search(SearchType searchType, Square startingPosition, DirectionPriority directionPriority, Color visitedColor){
+    Search(SearchType searchType, Square startingPosition, DirectionPriority directionPriority){
         this.searchType = searchType;
         this.currentPosition = startingPosition;
         this.directionPriority = directionPriority;
-        this.visitedColor = visitedColor;
+        if(directionPriority == DirectionPriority.LEFT_THEN_UP){
+            this.visitedColor = Parameters.leftThenUpColor;
+        }else if(directionPriority == DirectionPriority.LEFT_THEN_DOWN){
+            this.visitedColor = Parameters.leftThenDownColor;
+        }else if(directionPriority == DirectionPriority.RIGHT_THEN_UP){
+            this.visitedColor = Parameters.rightThenUpColor;
+        }else if(directionPriority == DirectionPriority.RIGHT_THEN_DOWN){
+            this.visitedColor = Parameters.rightThenDownColor;
+        }
         this.queue = new LinkedList<>();
         this.queue.add(startingPosition);
         this.visited = new HashSet<>();

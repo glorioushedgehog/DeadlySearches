@@ -18,26 +18,26 @@ class KeyResponder extends KeyAdapter {
         }
         heldDownKeys.add(key);
         if (key == KeyEvent.VK_LEFT && game.timer.isRunning()) {
-            this.game.player.moveLeft();
+            game.player.moveLeft();
         } else if (key == KeyEvent.VK_RIGHT && game.timer.isRunning()) {
-            this.game.player.moveRight();
+            game.player.moveRight();
         } else if (key == KeyEvent.VK_UP && game.timer.isRunning()) {
-            this.game.player.moveUp();
+            game.player.moveUp();
         } else if (key == KeyEvent.VK_DOWN && game.timer.isRunning()) {
-            this.game.player.moveDown();
+            game.player.moveDown();
         } else if (key == KeyEvent.VK_ESCAPE) {
-            if (this.game.timer.isRunning()) {
-                this.game.timer.stop();
+            if (game.timer.isRunning()) {
+                game.timer.stop();
             } else {
                 // make sure this can't happen if player
                 // has lost the game
-                this.game.timer.start();
+                game.timer.start();
             }
         } else if (key == KeyEvent.VK_PAUSE) {
-            if (this.game.timer.isRunning()) {
-                this.game.timer.stop();
+            if (game.timer.isRunning()) {
+                game.timer.stop();
             } else {
-                this.game.timer.start();
+                game.timer.start();
             }
         }
     }

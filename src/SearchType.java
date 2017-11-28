@@ -10,7 +10,7 @@ public enum SearchType {
             case DFS:
                 return "Depth-First Search";
             default:
-                return "";
+                return "Invalid search type";
         }
     }
 }

@@ -4,11 +4,7 @@ public enum DirectionPriority {
     LEFT_THEN_UP,
     LEFT_THEN_DOWN,
     RIGHT_THEN_UP,
-    RIGHT_THEN_DOWN,
-    UP_THEN_RIGHT,
-    UP_THEN_LEFT,
-    DOWN_THEN_RIGHT,
-    DOWN_THEN_LEFT;
+    RIGHT_THEN_DOWN;
 
     ArrayList<Square> orderedNeighbors(Square currentSquare) {
         ArrayList<Square> neighbors = new ArrayList<>();
@@ -82,78 +78,6 @@ public enum DirectionPriority {
                     neighbors.add(candidate);
                 }
                 candidate = currentSquare.getLeftNeighbor();
-                if(candidate != null){
-                    neighbors.add(candidate);
-                }
-                return neighbors;
-            case UP_THEN_RIGHT:
-                candidate = currentSquare.getTopNeighbor();
-                if(candidate != null){
-                    neighbors.add(candidate);
-                }
-                candidate = currentSquare.getRightNeighbor();
-                if(candidate != null){
-                    neighbors.add(candidate);
-                }
-                candidate = currentSquare.getLeftNeighbor();
-                if(candidate != null){
-                    neighbors.add(candidate);
-                }
-                candidate = currentSquare.getBottomNeighbor();
-                if(candidate != null){
-                    neighbors.add(candidate);
-                }
-                return neighbors;
-            case UP_THEN_LEFT:
-                candidate = currentSquare.getTopNeighbor();
-                if(candidate != null){
-                    neighbors.add(candidate);
-                }
-                candidate = currentSquare.getLeftNeighbor();
-                if(candidate != null){
-                    neighbors.add(candidate);
-                }
-                candidate = currentSquare.getRightNeighbor();
-                if(candidate != null){
-                    neighbors.add(candidate);
-                }
-                candidate = currentSquare.getBottomNeighbor();
-                if(candidate != null){
-                    neighbors.add(candidate);
-                }
-                return neighbors;
-            case DOWN_THEN_RIGHT:
-                candidate = currentSquare.getBottomNeighbor();
-                if(candidate != null){
-                    neighbors.add(candidate);
-                }
-                candidate = currentSquare.getRightNeighbor();
-                if(candidate != null){
-                    neighbors.add(candidate);
-                }
-                candidate = currentSquare.getLeftNeighbor();
-                if(candidate != null){
-                    neighbors.add(candidate);
-                }
-                candidate = currentSquare.getTopNeighbor();
-                if(candidate != null){
-                    neighbors.add(candidate);
-                }
-                return neighbors;
-            case DOWN_THEN_LEFT:
-                candidate = currentSquare.getBottomNeighbor();
-                if(candidate != null){
-                    neighbors.add(candidate);
-                }
-                candidate = currentSquare.getLeftNeighbor();
-                if(candidate != null){
-                    neighbors.add(candidate);
-                }
-                candidate = currentSquare.getRightNeighbor();
-                if(candidate != null){
-                    neighbors.add(candidate);
-                }
-                candidate = currentSquare.getTopNeighbor();
                 if(candidate != null){
                     neighbors.add(candidate);
                 }
