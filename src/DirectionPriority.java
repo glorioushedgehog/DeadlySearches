@@ -1,5 +1,8 @@
 import java.util.ArrayList;
 
+/**
+ * NOTE: direction priorities are inverted for DFS's
+ */
 public enum DirectionPriority {
     LEFT_THEN_UP,
     LEFT_THEN_DOWN,

@@ -19,6 +19,7 @@ class Parameters {
     static final Color mapColor = new Color(228, 234, 219);
     static final Color wallColor = new Color(35, 26, 150);
     static final Color playerColor = new Color(234, 18, 36);
+    // this should be different for BFS's and DFS's
     static final Color searchColor = new Color(128, 118, 68);
     static final Color foodColor = new Color(3, 187, 32);
 

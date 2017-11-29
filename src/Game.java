@@ -3,19 +3,24 @@ import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Random;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 
 public class Game extends JPanel implements ActionListener {
+    private MapGenerator mapGenerator;
     private Square[][] squares;
     private int viewWidth;
     private int viewHeight;
     private int width;
     private int height;
+    private int numUnSearchedSquares;
     private int squareSize;
     private int ticksBetweenSearchMoves;
     private int ticksTilSearchMove;
     private Search[] searches;
-    private Food[] foods;
+    private HashSet<List<Integer>> foods;
+    private HashSet<Particle> particles;
     Player player;
     Timer timer;
 
@@ -24,12 +29,13 @@ public class Game extends JPanel implements ActionListener {
         this.viewHeight = viewHeight;
         this.width = Parameters.numSquaresInRow;
         this.height = Parameters.numRowsOfSquares;
+        this.numUnSearchedSquares = width * height - 1;
         this.squareSize = Math.min(Parameters.mapWidth / width, Parameters.mapHeight / height);
         addKeyListener(new KeyResponder(this));
         // in order for key detection to work, the game
         // has to be focusable
         setFocusable(true);
-        MapGenerator mapGenerator = new MapGenerator(width, height);
+        this.mapGenerator = new MapGenerator(width, height);
         this.squares = mapGenerator.generateMap();
         this.player = new Player(squares[height / 2][width / 2]);
         this.searches = new Search[]{
@@ -38,11 +44,8 @@ public class Game extends JPanel implements ActionListener {
                 new Search(SearchType.DFS, squares[3 * height / 4][width / 4], DirectionPriority.RIGHT_THEN_UP),
                 new Search(SearchType.BFS, squares[3 * height / 4][3 * width / 4], DirectionPriority.LEFT_THEN_UP)
         };
-        this.foods = new Food[Parameters.numFoods];
-        Random random = new Random();
-        for(int i = 0; i < foods.length; i++){
-            foods[i] = new Food(random.nextInt(width), random.nextInt(height));
-        }
+        this.foods = mapGenerator.generateFood(Parameters.numFoods);
+        this.particles = new HashSet<>();
         this.ticksBetweenSearchMoves = (int) (((double) Parameters.searchDelay) / Parameters.tickDelay);
         this.ticksTilSearchMove = ticksBetweenSearchMoves;
         this.timer = new Timer(Parameters.tickDelay, this);
@@ -52,22 +55,21 @@ public class Game extends JPanel implements ActionListener {
     private void updateGame() {
         int xPlayer = player.currentPosition.x;
         int yPlayer = player.currentPosition.y;
-        boolean foodLeft = false;
-        for (int i = 0; i < foods.length; i++) {
-            Food aFood = foods[i];
-            if (aFood != null) {
-                foodLeft = true;
-                int x = aFood.x;
-                int y = aFood.y;
-                if (x == xPlayer && y == yPlayer) {
-                    foods[i] = null;
-                    System.out.println("you ate some food !");
+        for (List<Integer> aFood : foods) {
+            int x = aFood.get(0);
+            int y = aFood.get(1);
+            if (x == xPlayer && y == yPlayer) {
+                foods.remove(aFood);
+                System.out.println("you ate some food !");
+                if (foods.size() == 0) {
+                    timer.stop();
+                    System.out.println("you ate ALL the food !");
+                } else {
+                    Particle[] newParticles = mapGenerator.newParticles(x,y,squareSize);
+                    Collections.addAll(particles, newParticles);
                 }
+                break;
             }
-        }
-        if (!foodLeft) {
-            timer.stop();
-            System.out.println("you ate ALL the food !");
         }
         for (Search search : searches) {
             int x = search.currentPosition.x;
@@ -78,9 +80,15 @@ public class Game extends JPanel implements ActionListener {
             }
         }
 
+        for (Particle aParticle : particles) {
+            aParticle.move();
+        }
+        particles.removeIf(particle -> particle.isOutOfBounds(viewWidth, viewHeight));
+
         ticksTilSearchMove--;
         if (ticksTilSearchMove <= 0) {
             ticksTilSearchMove = ticksBetweenSearchMoves;
+            numUnSearchedSquares--;
             for (Search search : searches) {
                 int x = search.currentPosition.x;
                 int y = search.currentPosition.y;
@@ -89,6 +97,11 @@ public class Game extends JPanel implements ActionListener {
             for (Search search : searches) {
                 search.move();
             }
+        }
+
+        if (numUnSearchedSquares == 0) {
+            timer.stop();
+            System.out.println("the searches finished !");
         }
     }
 
@@ -103,6 +116,7 @@ public class Game extends JPanel implements ActionListener {
         drawPlayer(g2d);
         drawSearches(g2d);
         drawWalls(g2d);
+        drawParticles(g2d);
 //        drawMaze(g2d);
 //        drawScore(g2d);
 //        doAnim();
@@ -115,14 +129,19 @@ public class Game extends JPanel implements ActionListener {
         g2d.dispose();
     }
 
+    private void drawParticles(Graphics2D g2d) {
+        g2d.setColor(Parameters.foodColor);
+        for (Particle aParticle : particles) {
+            g2d.fillRect(aParticle.leftX, aParticle.topY, aParticle.width, aParticle.height);
+        }
+    }
+
     private void drawFoods(Graphics2D g2d) {
         g2d.setColor(Parameters.foodColor);
-        for(Food aFood : foods){
-            if (aFood != null) {
-                int leftX = aFood.x * squareSize;
-                int topY = aFood.y * squareSize;
-                g2d.fillRect(leftX, topY, squareSize, squareSize);
-            }
+        for (List<Integer> aFood : foods) {
+            int leftX = aFood.get(0) * squareSize;
+            int topY = aFood.get(1) * squareSize;
+            g2d.fillRect(leftX, topY, squareSize, squareSize);
         }
     }
 

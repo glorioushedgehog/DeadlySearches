@@ -3,9 +3,11 @@ import java.util.*;
 class MapGenerator {
     private int width;
     private int height;
+    private Random random;
     MapGenerator(int width, int height){
         this.width = width;
         this.height = height;
+        this.random = new Random();
     }
     Square[][] generateMap() {
         Square[][] squares = new Square[this.height][this.width];
@@ -30,7 +32,6 @@ class MapGenerator {
                 bottomSquare.setTopNeighbor(topSquare);
             }
         }
-        Random random = new Random();
         HashSet<List<Integer>> notDone = new HashSet<>();
         for (int i = 0; i < this.height + 1; i++) {
             for (int j = 0; j < this.width + 1; j++) {
@@ -97,5 +98,26 @@ class MapGenerator {
         int x = position.get(1);
         int y = position.get(0);
         return x == 0 || x == width || y == 0 || y == height;
+    }
+
+    HashSet<List<Integer>> generateFood(int numFoods) {
+        HashSet<List<Integer>> foods = new HashSet<>();
+        for(int i = 0; i < numFoods; i++){
+            List<Integer> aFood = Arrays.asList(random.nextInt(width), random.nextInt(height));
+            while(foods.contains(aFood)){
+                aFood = Arrays.asList(random.nextInt(width), random.nextInt(height));
+            }
+            foods.add(aFood);
+        }
+        return foods;
+    }
+
+    Particle[] newParticles(int x, int y, int squareSize){
+        return new Particle[] {
+                new Particle(x * squareSize, y * squareSize, 10, 10, 10, 10),
+                new Particle(x * squareSize, y * squareSize, 10, 10, -10, 10),
+                new Particle(x * squareSize, y * squareSize, 10, 10, 10, -10),
+                new Particle(x * squareSize, y * squareSize, 10, 10, -10, -10)
+        };
     }
 }
