@@ -52,10 +52,11 @@ public class Game extends JPanel implements ActionListener {
     private void updateGame() {
         int xPlayer = player.currentPosition.x;
         int yPlayer = player.currentPosition.y;
-
-        for(int i = 0; i < foods.length; i++){
+        boolean foodLeft = false;
+        for (int i = 0; i < foods.length; i++) {
             Food aFood = foods[i];
-            if(aFood != null) {
+            if (aFood != null) {
+                foodLeft = true;
                 int x = aFood.x;
                 int y = aFood.y;
                 if (x == xPlayer && y == yPlayer) {
@@ -63,6 +64,10 @@ public class Game extends JPanel implements ActionListener {
                     System.out.println("you ate some food !");
                 }
             }
+        }
+        if (!foodLeft) {
+            timer.stop();
+            System.out.println("you ate ALL the food !");
         }
         for (Search search : searches) {
             int x = search.currentPosition.x;
