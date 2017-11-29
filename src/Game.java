@@ -3,6 +3,7 @@ import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Random;
 
 public class Game extends JPanel implements ActionListener {
     private Square[][] squares;
@@ -14,14 +15,16 @@ public class Game extends JPanel implements ActionListener {
     private int ticksBetweenSearchMoves;
     private int ticksTilSearchMove;
     private Search[] searches;
+    private Food[] foods;
     Player player;
     Timer timer;
+
     Game(int viewWidth, int viewHeight) {
         this.viewWidth = viewWidth;
         this.viewHeight = viewHeight;
         this.width = Parameters.numSquaresInRow;
         this.height = Parameters.numRowsOfSquares;
-        this.squareSize = viewHeight / width;
+        this.squareSize = Math.min(Parameters.mapWidth / width, Parameters.mapHeight / height);
         addKeyListener(new KeyResponder(this));
         // in order for key detection to work, the game
         // has to be focusable
@@ -30,24 +33,42 @@ public class Game extends JPanel implements ActionListener {
         this.squares = mapGenerator.generateMap();
         this.player = new Player(squares[height / 2][width / 2]);
         this.searches = new Search[]{
-                new Search(SearchType.BFS, squares[0][0], DirectionPriority.RIGHT_THEN_DOWN),
-                new Search(SearchType.DFS, squares[0][width - 1], DirectionPriority.LEFT_THEN_DOWN),
-                new Search(SearchType.DFS, squares[height - 1][0], DirectionPriority.RIGHT_THEN_UP),
-                new Search(SearchType.BFS, squares[height - 1][width - 1], DirectionPriority.LEFT_THEN_UP)
+                new Search(SearchType.BFS, squares[height / 4][width / 4], DirectionPriority.RIGHT_THEN_DOWN),
+                new Search(SearchType.DFS, squares[height / 4][3 * width / 4], DirectionPriority.LEFT_THEN_DOWN),
+                new Search(SearchType.DFS, squares[3 * height / 4][width / 4], DirectionPriority.RIGHT_THEN_UP),
+                new Search(SearchType.BFS, squares[3 * height / 4][3 * width / 4], DirectionPriority.LEFT_THEN_UP)
         };
+        this.foods = new Food[Parameters.numFoods];
+        Random random = new Random();
+        for(int i = 0; i < foods.length; i++){
+            foods[i] = new Food(random.nextInt(width), random.nextInt(height));
+        }
         this.ticksBetweenSearchMoves = (int) (((double) Parameters.searchDelay) / Parameters.tickDelay);
-        this.ticksTilSearchMove = 0;
+        this.ticksTilSearchMove = ticksBetweenSearchMoves;
         this.timer = new Timer(Parameters.tickDelay, this);
         timer.start();
     }
+
     private void updateGame() {
+        int xPlayer = player.currentPosition.x;
+        int yPlayer = player.currentPosition.y;
+
+        for(int i = 0; i < foods.length; i++){
+            Food aFood = foods[i];
+            if(aFood != null) {
+                int x = aFood.x;
+                int y = aFood.y;
+                if (x == xPlayer && y == yPlayer) {
+                    foods[i] = null;
+                    System.out.println("you ate some food !");
+                }
+            }
+        }
         for (Search search : searches) {
             int x = search.currentPosition.x;
             int y = search.currentPosition.y;
-            int xPlayer = player.currentPosition.x;
-            int yPlayer = player.currentPosition.y;
             if (x == xPlayer && y == yPlayer) {
-                //timer.stop();
+                timer.stop();
                 System.out.println("you were found by a " + search.searchType);
             }
         }
@@ -65,6 +86,7 @@ public class Game extends JPanel implements ActionListener {
             }
         }
     }
+
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -72,6 +94,7 @@ public class Game extends JPanel implements ActionListener {
         g2d.setColor(Parameters.mapColor);
         g2d.fillRect(0, 0, Parameters.mapWidth, Parameters.mapHeight);
         drawSquares(g2d);
+        drawFoods(g2d);
         drawPlayer(g2d);
         drawSearches(g2d);
         drawWalls(g2d);
@@ -86,43 +109,58 @@ public class Game extends JPanel implements ActionListener {
         Toolkit.getDefaultToolkit().sync();
         g2d.dispose();
     }
-    private void drawSquares(Graphics2D g2d){
-        for (int i = 0; i < this.height; i++) {
-            for (int j = 0; j < this.width; j++) {
+
+    private void drawFoods(Graphics2D g2d) {
+        g2d.setColor(Parameters.foodColor);
+        for(Food aFood : foods){
+            if (aFood != null) {
+                int leftX = aFood.x * squareSize;
+                int topY = aFood.y * squareSize;
+                g2d.fillRect(leftX, topY, squareSize, squareSize);
+            }
+        }
+    }
+
+    private void drawSquares(Graphics2D g2d) {
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
                 Square aSquare = squares[i][j];
                 if (aSquare.color != null) {
                     g2d.setColor(aSquare.color);
-                    int leftX = j * this.squareSize;
-                    int topY = i * this.squareSize;
-                    g2d.fillRect(leftX, topY, this.squareSize, this.squareSize);
+                    int leftX = j * squareSize;
+                    int topY = i * squareSize;
+                    g2d.fillRect(leftX, topY, squareSize, squareSize);
                 }
             }
         }
     }
-    private void drawPlayer(Graphics2D g2d){
+
+    private void drawPlayer(Graphics2D g2d) {
         g2d.setColor(Parameters.playerColor);
-        int playerX = this.player.currentPosition.x * this.squareSize;
-        int playerY = this.player.currentPosition.y * this.squareSize;
-        g2d.fillRect(playerX, playerY, this.squareSize, this.squareSize);
+        int playerX = player.currentPosition.x * squareSize;
+        int playerY = player.currentPosition.y * squareSize;
+        g2d.fillRect(playerX, playerY, squareSize, squareSize);
     }
-    private void drawSearches(Graphics2D g2d){
+
+    private void drawSearches(Graphics2D g2d) {
         g2d.setColor(Parameters.searchColor);
         for (Search search : searches) {
-            int leftX = search.currentPosition.x * this.squareSize;
-            int topY = search.currentPosition.y * this.squareSize;
-            g2d.fillRect(leftX, topY, this.squareSize, this.squareSize);
+            int leftX = search.currentPosition.x * squareSize;
+            int topY = search.currentPosition.y * squareSize;
+            g2d.fillRect(leftX, topY, squareSize, squareSize);
         }
     }
-    private void drawWalls(Graphics2D g2d){
+
+    private void drawWalls(Graphics2D g2d) {
         g2d.setColor(Parameters.wallColor);
         g2d.setStroke(new BasicStroke(Parameters.wallWidth));
-        for (int i = 0; i < this.height; i++) {
-            for (int j = 0; j < this.width; j++) {
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
                 Square aSquare = squares[i][j];
-                int leftX = j * this.squareSize;
-                int rightX = leftX + this.squareSize;
-                int topY = i * this.squareSize;
-                int bottomY = topY + this.squareSize;
+                int leftX = j * squareSize;
+                int rightX = leftX + squareSize;
+                int topY = i * squareSize;
+                int bottomY = topY + squareSize;
                 if (aSquare.getTopNeighbor() == null) {
                     g2d.drawLine(leftX, topY, rightX, topY);
                 }
@@ -138,6 +176,7 @@ public class Game extends JPanel implements ActionListener {
             }
         }
     }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         repaint();

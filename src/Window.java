@@ -18,7 +18,7 @@ public class Window extends JFrame {
             viewHeight = Parameters.viewHeight;
         }
         add(new Game(viewWidth, viewHeight));
-        setTitle("Deadly Searches");
+        setTitle(Parameters.title);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setVisible(true);
     }
