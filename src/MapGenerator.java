@@ -116,11 +116,17 @@ class MapGenerator {
     }
 
     Particle[] newParticles(int x, int y, int squareSize){
+        int leftX = x * squareSize;
+        int topY = y * squareSize;
         return new Particle[] {
-                new Particle(x * squareSize, y * squareSize, 10, 10, 10, 10),
-                new Particle(x * squareSize, y * squareSize, 10, 10, -10, 10),
-                new Particle(x * squareSize, y * squareSize, 10, 10, 10, -10),
-                new Particle(x * squareSize, y * squareSize, 10, 10, -10, -10)
+                new Particle(leftX, topY, 10, 10, 10, 10),
+                new Particle(leftX, topY, 10, 10, -10, 10),
+                new Particle(leftX, topY, 10, 10, 10, -10),
+                new Particle(leftX, topY, 10, 10, -10, -10),
+                new Particle(leftX, topY, 10, 10, 14, 0),
+                new Particle(leftX, topY, 10, 10, -14, 0),
+                new Particle(leftX, topY, 10, 10, 0, 14),
+                new Particle(leftX, topY, 10, 10, 0, -14)
         };
     }
 }

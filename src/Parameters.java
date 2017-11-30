@@ -23,8 +23,8 @@ class Parameters {
     static final Color searchColor = new Color(128, 118, 68);
     static final Color foodColor = new Color(3, 187, 32);
 
-    static final Color leftThenUpColor = new Color(248, 162, 162);
-    static final Color leftThenDownColor = new Color(248, 165, 228);
-    static final Color rightThenUpColor = new Color(169, 159, 249);
-    static final Color rightThenDownColor = new Color(178, 249, 181);
+    static final Color leftThenUpColor = new Color(248, 102, 105);
+    static final Color leftThenDownColor = new Color(248, 177, 106);
+    static final Color rightThenUpColor = new Color(137, 144, 249);
+    static final Color rightThenDownColor = new Color(125, 249, 126);
 }
