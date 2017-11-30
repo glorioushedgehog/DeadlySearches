@@ -100,11 +100,14 @@ class MapGenerator {
         return x == 0 || x == width || y == 0 || y == height;
     }
 
-    HashSet<List<Integer>> generateFood(int numFoods) {
+    HashSet<List<Integer>> generateFood(int numFoods, Square playerPosition) {
+        int playerX = playerPosition.x;
+        int playerY = playerPosition.y;
+        List<Integer> playerCoordinates = Arrays.asList(playerX, playerY);
         HashSet<List<Integer>> foods = new HashSet<>();
         for(int i = 0; i < numFoods; i++){
             List<Integer> aFood = Arrays.asList(random.nextInt(width), random.nextInt(height));
-            while(foods.contains(aFood)){
+            while(foods.contains(aFood) || aFood == playerCoordinates){
                 aFood = Arrays.asList(random.nextInt(width), random.nextInt(height));
             }
             foods.add(aFood);

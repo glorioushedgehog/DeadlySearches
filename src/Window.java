@@ -13,13 +13,14 @@ public class Window extends JFrame {
             viewWidth = gd.getDisplayMode().getWidth();
             viewHeight = gd.getDisplayMode().getHeight();
         }else{
+            setResizable(false);
             setSize(Parameters.viewWidth, Parameters.viewHeight);
             viewWidth = Parameters.viewWidth;
             viewHeight = Parameters.viewHeight;
         }
         add(new Game(viewWidth, viewHeight));
         setTitle(Parameters.title);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setVisible(true);
     }
 

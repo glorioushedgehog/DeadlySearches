@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 
@@ -34,6 +35,9 @@ class Search {
         }
         currentPosition = queue.remove();
         ArrayList<Square> neighbors = directionPriority.orderedNeighbors(currentPosition);
+        if(searchType == SearchType.DFS){
+            Collections.reverse(neighbors);
+        }
         for(Square aNeighbor :  neighbors){
             if(!visited.contains(aNeighbor)){
                 visited.add(aNeighbor);

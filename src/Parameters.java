@@ -3,8 +3,10 @@ import java.awt.*;
 class Parameters {
     static final String title = "Deadly Searches";
     static final boolean fullScreen = false;
-    static final int viewWidth = 1000;
+    static final int viewWidth = 1500;
     static final int viewHeight = 1000;
+    static final double horizontalPadding = 0.2;
+    static final double verticalPadding = 0.2;
 
     static final int tickDelay = 10;
     static final int searchDelay = 500;
@@ -13,10 +15,8 @@ class Parameters {
     static final int wallWidth = 3;
     static final int numSquaresInRow = 20;
     static final int numRowsOfSquares = 20;
-    static final int mapWidth = 1000;
-    static final int mapHeight = 800;
 
-    static final Color mapColor = new Color(228, 234, 219);
+    static final Color mapColor = new Color(183, 188, 176);
     static final Color wallColor = new Color(35, 26, 150);
     static final Color playerColor = new Color(234, 18, 36);
     // this should be different for BFS's and DFS's

@@ -14,6 +14,8 @@ public class Game extends JPanel implements ActionListener {
     private int viewHeight;
     private int width;
     private int height;
+    private int xOffset;
+    private int yOffset;
     private int numUnSearchedSquares;
     private int squareSize;
     private int ticksBetweenSearchMoves;
@@ -30,7 +32,11 @@ public class Game extends JPanel implements ActionListener {
         this.width = Parameters.numSquaresInRow;
         this.height = Parameters.numRowsOfSquares;
         this.numUnSearchedSquares = width * height - 1;
-        this.squareSize = Math.min(Parameters.mapWidth / width, Parameters.mapHeight / height);
+        int maxHorizontalSquareSize = (int) (viewWidth * (1 - Parameters.horizontalPadding) / width);
+        int maxVerticalSquareSize = (int) (viewHeight * (1 - Parameters.verticalPadding) / height);
+        this.squareSize = Math.min(maxHorizontalSquareSize, maxVerticalSquareSize);
+        this.xOffset = (viewWidth - width * squareSize) / 2;
+        this.yOffset = (viewHeight - height * squareSize) / 2;
         addKeyListener(new KeyResponder(this));
         // in order for key detection to work, the game
         // has to be focusable
@@ -44,7 +50,7 @@ public class Game extends JPanel implements ActionListener {
                 new Search(SearchType.DFS, squares[3 * height / 4][width / 4], DirectionPriority.RIGHT_THEN_UP),
                 new Search(SearchType.BFS, squares[3 * height / 4][3 * width / 4], DirectionPriority.LEFT_THEN_UP)
         };
-        this.foods = mapGenerator.generateFood(Parameters.numFoods);
+        this.foods = mapGenerator.generateFood(Parameters.numFoods, player.currentPosition);
         this.particles = new HashSet<>();
         this.ticksBetweenSearchMoves = (int) (((double) Parameters.searchDelay) / Parameters.tickDelay);
         this.ticksTilSearchMove = ticksBetweenSearchMoves;
@@ -60,12 +66,11 @@ public class Game extends JPanel implements ActionListener {
             int y = aFood.get(1);
             if (x == xPlayer && y == yPlayer) {
                 foods.remove(aFood);
-                System.out.println("you ate some food !");
                 if (foods.size() == 0) {
                     timer.stop();
                     System.out.println("you ate ALL the food !");
                 } else {
-                    Particle[] newParticles = mapGenerator.newParticles(x,y,squareSize);
+                    Particle[] newParticles = mapGenerator.newParticles(x, y, squareSize);
                     Collections.addAll(particles, newParticles);
                 }
                 break;
@@ -83,7 +88,7 @@ public class Game extends JPanel implements ActionListener {
         for (Particle aParticle : particles) {
             aParticle.move();
         }
-        particles.removeIf(particle -> particle.isOutOfBounds(viewWidth, viewHeight));
+        particles.removeIf(particle -> particle.isOutOfBounds(xOffset, yOffset, viewWidth, viewHeight));
 
         ticksTilSearchMove--;
         if (ticksTilSearchMove <= 0) {
@@ -110,7 +115,7 @@ public class Game extends JPanel implements ActionListener {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
         g2d.setColor(Parameters.mapColor);
-        g2d.fillRect(0, 0, Parameters.mapWidth, Parameters.mapHeight);
+        g2d.fillRect(xOffset, yOffset, width * squareSize, height * squareSize);
         drawSquares(g2d);
         drawFoods(g2d);
         drawPlayer(g2d);
@@ -125,6 +130,13 @@ public class Game extends JPanel implements ActionListener {
 //        } else {
 //            showIntroScreen(g2d);
 //        }
+        String s;
+        Font smallFont = new Font("Helvetica", Font.BOLD, viewHeight/12);
+        g.setFont(smallFont);
+        g.setColor(new Color(61, 32, 151));
+        s = "Level " + 1;
+        g.drawString(s, xOffset, yOffset);
+
         Toolkit.getDefaultToolkit().sync();
         g2d.dispose();
     }
@@ -132,7 +144,7 @@ public class Game extends JPanel implements ActionListener {
     private void drawParticles(Graphics2D g2d) {
         g2d.setColor(Parameters.foodColor);
         for (Particle aParticle : particles) {
-            g2d.fillRect(aParticle.leftX, aParticle.topY, aParticle.width, aParticle.height);
+            g2d.fillRect(xOffset + aParticle.leftX, yOffset + aParticle.topY, aParticle.width, aParticle.height);
         }
     }
 
@@ -141,7 +153,7 @@ public class Game extends JPanel implements ActionListener {
         for (List<Integer> aFood : foods) {
             int leftX = aFood.get(0) * squareSize;
             int topY = aFood.get(1) * squareSize;
-            g2d.fillRect(leftX, topY, squareSize, squareSize);
+            g2d.fillRect(xOffset + leftX, yOffset + topY, squareSize, squareSize);
         }
     }
 
@@ -153,7 +165,7 @@ public class Game extends JPanel implements ActionListener {
                     g2d.setColor(aSquare.color);
                     int leftX = j * squareSize;
                     int topY = i * squareSize;
-                    g2d.fillRect(leftX, topY, squareSize, squareSize);
+                    g2d.fillRect(xOffset + leftX, yOffset + topY, squareSize, squareSize);
                 }
             }
         }
@@ -163,7 +175,7 @@ public class Game extends JPanel implements ActionListener {
         g2d.setColor(Parameters.playerColor);
         int playerX = player.currentPosition.x * squareSize;
         int playerY = player.currentPosition.y * squareSize;
-        g2d.fillRect(playerX, playerY, squareSize, squareSize);
+        g2d.fillRect(xOffset + playerX, yOffset + playerY, squareSize, squareSize);
     }
 
     private void drawSearches(Graphics2D g2d) {
@@ -171,7 +183,7 @@ public class Game extends JPanel implements ActionListener {
         for (Search search : searches) {
             int leftX = search.currentPosition.x * squareSize;
             int topY = search.currentPosition.y * squareSize;
-            g2d.fillRect(leftX, topY, squareSize, squareSize);
+            g2d.fillRect(xOffset + leftX, yOffset + topY, squareSize, squareSize);
         }
     }
 
@@ -186,16 +198,16 @@ public class Game extends JPanel implements ActionListener {
                 int topY = i * squareSize;
                 int bottomY = topY + squareSize;
                 if (aSquare.getTopNeighbor() == null) {
-                    g2d.drawLine(leftX, topY, rightX, topY);
+                    g2d.drawLine(xOffset + leftX, yOffset + topY, xOffset + rightX, yOffset + topY);
                 }
                 if (aSquare.getBottomNeighbor() == null) {
-                    g2d.drawLine(leftX, bottomY, rightX, bottomY);
+                    g2d.drawLine(xOffset + leftX, yOffset + bottomY, xOffset + rightX, yOffset + bottomY);
                 }
                 if (aSquare.getLeftNeighbor() == null) {
-                    g2d.drawLine(leftX, topY, leftX, bottomY);
+                    g2d.drawLine(xOffset + leftX, yOffset + topY, xOffset + leftX, yOffset + bottomY);
                 }
                 if (aSquare.getRightNeighbor() == null) {
-                    g2d.drawLine(rightX, topY, rightX, bottomY);
+                    g2d.drawLine(xOffset + rightX, yOffset + topY, xOffset + rightX, yOffset + bottomY);
                 }
             }
         }

@@ -18,7 +18,7 @@ class Particle {
         topY += dy;
     }
 
-    boolean isOutOfBounds(int viewWidth, int viewHeight) {
-        return leftX + width < 0 || topY + height < 0 || leftX > viewWidth || topY > viewHeight;
+    boolean isOutOfBounds(int xOffset, int yOffset, int viewWidth, int viewHeight) {
+        return leftX + width < -xOffset || topY + height < -yOffset || leftX > viewWidth - xOffset || topY > viewHeight - yOffset;
     }
 }
