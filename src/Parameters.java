@@ -16,7 +16,8 @@ class Parameters {
     static final int numSquaresInRow = 20;
     static final int numRowsOfSquares = 20;
 
-    static final Color mapColor = new Color(183, 188, 176);
+    static final Color backGroundColor = new Color(230, 230, 210);
+    static final Color mapColor = new Color(230, 230, 230);
     static final Color wallColor = new Color(35, 26, 150);
     static final Color playerColor = new Color(234, 18, 36);
     // this should be different for BFS's and DFS's
