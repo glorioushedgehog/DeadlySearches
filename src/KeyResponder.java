@@ -1,3 +1,5 @@
+import sun.plugin2.message.GetAppletMessage;
+
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.HashSet;
@@ -5,6 +7,7 @@ import java.util.HashSet;
 class KeyResponder extends KeyAdapter {
     private Game game;
     private HashSet<Integer> heldDownKeys;
+
     KeyResponder(Game game) {
         this.game = game;
         this.heldDownKeys = new HashSet<>();
@@ -13,39 +16,39 @@ class KeyResponder extends KeyAdapter {
     @Override
     public void keyPressed(KeyEvent e) {
         int key = e.getKeyCode();
-        if(heldDownKeys.contains(key)){
+        if (heldDownKeys.contains(key)) {
             return;
         }
         heldDownKeys.add(key);
-        if (key == KeyEvent.VK_LEFT && game.timer.isRunning()) {
-            game.player.moveLeft();
-        } else if (key == KeyEvent.VK_RIGHT && game.timer.isRunning()) {
-            game.player.moveRight();
-        } else if (key == KeyEvent.VK_UP && game.timer.isRunning()) {
-            game.player.moveUp();
-        } else if (key == KeyEvent.VK_DOWN && game.timer.isRunning()) {
-            game.player.moveDown();
-        } else if (key == KeyEvent.VK_ESCAPE) {
-            if (game.timer.isRunning()) {
-                game.timer.stop();
-            } else {
-                // make sure this can't happen if player
-                // has lost the game
-                game.timer.start();
+        if (game.gameState == GameState.PLAYING) {
+            if (key == KeyEvent.VK_LEFT) {
+                game.player.moveLeft();
+            } else if (key == KeyEvent.VK_RIGHT) {
+                game.player.moveRight();
+            } else if (key == KeyEvent.VK_UP) {
+                game.player.moveUp();
+            } else if (key == KeyEvent.VK_DOWN) {
+                game.player.moveDown();
+            } else if (key == KeyEvent.VK_ENTER) {
+                game.pause();
             }
-        } else if (key == KeyEvent.VK_PAUSE) {
-            if (game.timer.isRunning()) {
-                game.timer.stop();
-            } else {
-                game.timer.start();
+        } else if (game.gameState == GameState.MENU ||
+                game.gameState == GameState.PAUSED ||
+                game.gameState == GameState.LEVEL_COMPLETE ||
+                game.gameState == GameState.GAME_OVER) {
+            if (key == KeyEvent.VK_ENTER) {
+                game.unPause();
+            } else if (key == KeyEvent.VK_ESCAPE) {
+                System.exit(0);
             }
         }
+
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
         int key = e.getKeyCode();
-        if(heldDownKeys.contains(key)){
+        if (heldDownKeys.contains(key)) {
             heldDownKeys.remove(key);
         }
     }

@@ -23,15 +23,17 @@ public class Game extends JPanel implements ActionListener {
     private Search[] searches;
     private HashSet<List<Integer>> foods;
     private HashSet<Particle> particles;
+    private Timer timer;
+    private SearchType typeOfSearchFoundPlayer;
+    private int level;
+    GameState gameState;
     Player player;
-    Timer timer;
 
     Game(int viewWidth, int viewHeight) {
         this.viewWidth = viewWidth;
         this.viewHeight = viewHeight;
         this.width = Parameters.numSquaresInRow;
         this.height = Parameters.numRowsOfSquares;
-        this.numUnSearchedSquares = width * height - 1;
         int maxHorizontalSquareSize = (int) (viewWidth * (1 - Parameters.horizontalPadding) / width);
         int maxVerticalSquareSize = (int) (viewHeight * (1 - Parameters.verticalPadding) / height);
         this.squareSize = Math.min(maxHorizontalSquareSize, maxVerticalSquareSize);
@@ -42,6 +44,18 @@ public class Game extends JPanel implements ActionListener {
         // has to be focusable
         setFocusable(true);
         this.mapGenerator = new MapGenerator(width, height);
+        this.ticksBetweenSearchMoves = (int) (((double) Parameters.searchDelay) / Parameters.tickDelay);
+        this.gameState = GameState.MENU;
+        this.timer = new Timer(Parameters.tickDelay, this);
+        prepareLevel();
+    }
+
+    private void prepareLevel() {
+        this.level++;
+        if(this.ticksBetweenSearchMoves > 0){
+            this.ticksBetweenSearchMoves--;
+        }
+        this.numUnSearchedSquares = width * height - 1;
         this.squares = mapGenerator.generateMap();
         this.player = new Player(squares[height / 2][width / 2]);
         this.searches = new Search[]{
@@ -52,12 +66,37 @@ public class Game extends JPanel implements ActionListener {
         };
         this.foods = mapGenerator.generateFood(Parameters.numFoods, player.currentPosition);
         this.particles = new HashSet<>();
-        this.ticksBetweenSearchMoves = (int) (((double) Parameters.searchDelay) / Parameters.tickDelay);
         this.ticksTilSearchMove = ticksBetweenSearchMoves;
-        this.timer = new Timer(Parameters.tickDelay, this);
-        timer.start();
+        this.typeOfSearchFoundPlayer = null;
     }
 
+    void pause() {
+        gameState = GameState.PAUSED;
+        timer.stop();
+        repaint();
+    }
+
+    void unPause() {
+        if(gameState == GameState.GAME_OVER){
+            level = 0;
+            prepareLevel();
+        }else if(gameState == GameState.LEVEL_COMPLETE){
+            prepareLevel();
+        }
+        gameState = GameState.PLAYING;
+        timer.start();
+    }
+    private void levelComplete(){
+        gameState = GameState.LEVEL_COMPLETE;
+        timer.stop();
+        repaint();
+    }
+
+    private void gameOver(){
+        gameState = GameState.GAME_OVER;
+        timer.stop();
+        repaint();
+    }
     private void updateGame() {
         int xPlayer = player.currentPosition.x;
         int yPlayer = player.currentPosition.y;
@@ -67,8 +106,7 @@ public class Game extends JPanel implements ActionListener {
             if (x == xPlayer && y == yPlayer) {
                 foods.remove(aFood);
                 if (foods.size() == 0) {
-                    timer.stop();
-                    System.out.println("you ate ALL the food !");
+                    levelComplete();
                 } else {
                     Particle[] newParticles = mapGenerator.newParticles(x, y, squareSize);
                     Collections.addAll(particles, newParticles);
@@ -80,8 +118,8 @@ public class Game extends JPanel implements ActionListener {
             int x = search.currentPosition.x;
             int y = search.currentPosition.y;
             if (x == xPlayer && y == yPlayer) {
-                timer.stop();
-                System.out.println("you were found by a " + search.searchType);
+                typeOfSearchFoundPlayer = search.searchType;
+                gameOver();
             }
         }
 
@@ -105,8 +143,7 @@ public class Game extends JPanel implements ActionListener {
         }
 
         if (numUnSearchedSquares == 0) {
-            timer.stop();
-            System.out.println("the searches finished !");
+            gameOver();
         }
     }
 
@@ -124,21 +161,46 @@ public class Game extends JPanel implements ActionListener {
         drawSearches(g2d);
         drawWalls(g2d);
         drawParticles(g2d);
-//        drawMaze(g2d);
-//        drawScore(g2d);
-//        doAnim();
-//        if (inGame) {
-//            playGame(g2d);
-//        } else {
-//            showIntroScreen(g2d);
-//        }
+
         String s;
-        Font smallFont = new Font("Helvetica", Font.BOLD, viewHeight/12);
+        Font smallFont = new Font("Helvetica", Font.BOLD, viewHeight / 12);
         g.setFont(smallFont);
         g.setColor(new Color(61, 32, 151));
-        s = "Level " + 1;
+        s = "Level " + level;
         g.drawString(s, xOffset, yOffset);
-
+        if (gameState == GameState.MENU) {
+            s = "Menu!";
+            g.drawString(s, viewWidth / 2-600, viewHeight / 2);
+            s = "press enter to play!";
+            g.drawString(s, viewWidth / 2-600, viewHeight / 2+200);
+            s = "press escape to quit";
+            g.drawString(s, viewWidth / 2-600, viewHeight / 2+400);
+        } else if (gameState == GameState.PAUSED) {
+            s = "Paused!";
+            g.drawString(s, viewWidth / 2-600, viewHeight / 2);
+            s = "press enter to resume the game!";
+            g.drawString(s, viewWidth / 2-600, viewHeight / 2+200);
+            s = "press escape to quit";
+            g.drawString(s, viewWidth / 2-600, viewHeight / 2+400);
+        } else if (gameState == GameState.LEVEL_COMPLETE){
+            s = "Level Complete!";
+            g.drawString(s, viewWidth / 2-600, viewHeight / 2);
+            s = "press enter to play next level!";
+            g.drawString(s, viewWidth / 2-600, viewHeight / 2+200);
+            s = "press escape to quit";
+            g.drawString(s, viewWidth / 2-600, viewHeight / 2+400);
+        } else if (gameState == GameState.GAME_OVER){
+            if (typeOfSearchFoundPlayer == null) {
+                s = "the searches finished !";
+            }else{
+                s = "you were found by a " + typeOfSearchFoundPlayer;
+            }
+            g.drawString(s, viewWidth / 2-600, viewHeight / 2);
+            s = "press enter to play again!";
+            g.drawString(s, viewWidth / 2-600, viewHeight / 2+200);
+            s = "press escape to quit";
+            g.drawString(s, viewWidth / 2-600, viewHeight / 2+400);
+        }
         Toolkit.getDefaultToolkit().sync();
         g2d.dispose();
     }
@@ -218,6 +280,8 @@ public class Game extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         repaint();
-        updateGame();
+        if (gameState == GameState.PLAYING) {
+            updateGame();
+        }
     }
 }

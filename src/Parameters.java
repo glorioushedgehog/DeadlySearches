@@ -10,7 +10,7 @@ class Parameters {
 
     static final int tickDelay = 10;
     static final int searchDelay = 500;
-    static final int numFoods = 10;
+    static final int numFoods = 1;
 
     static final int wallWidth = 3;
     static final int numSquaresInRow = 20;
