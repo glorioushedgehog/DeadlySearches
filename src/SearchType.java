@@ -1,7 +1,15 @@
+/**
+ * differentiate between BFS's and DFS's
+ */
 public enum SearchType {
     BFS,
     DFS;
 
+    /**
+     * used for telling the player what kind
+     * of search found him
+     * @return a string describing the search
+     */
     @Override
     public String toString() {
         switch (this) {
