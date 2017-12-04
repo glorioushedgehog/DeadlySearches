@@ -8,7 +8,7 @@ import java.util.ArrayList;
  * determines this order. the first direction in the
  * priority is the opposite of the last direction.
  * for example: for LEFT_THEN_UP, the search will
- * go left, up, down, the right.
+ * go left, up, down, then right.
  */
 public enum DirectionPriority {
     LEFT_THEN_UP,
