@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="54cfe05f-0f02-45a3-bdd9-f97aebcc22da" name="Default" comment="">
+    <list default="true" id="54cfe05f-0f02-45a3-bdd9-f97aebcc22da" name="Default" comment="Gitignore">
       <change beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
@@ -116,6 +116,11 @@
             <path>
               <item name="DeadlySearches" type="b2602c69:ProjectViewProjectNode" />
               <item name="DeadlySearches" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="DeadlySearches" type="b2602c69:ProjectViewProjectNode" />
+              <item name="DeadlySearches" type="462c0819:PsiDirectoryNode" />
+              <item name=".idea" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="DeadlySearches" type="b2602c69:ProjectViewProjectNode" />
@@ -313,7 +318,7 @@
       <workItem from="1512064364074" duration="5128000" />
       <workItem from="1512260906785" duration="9918000" />
       <workItem from="1512277814593" duration="7983000" />
-      <workItem from="1512321252166" duration="13482000" />
+      <workItem from="1512321252166" duration="13570000" />
     </task>
     <task id="LOCAL-00001" summary="Add food">
       <created>1511913623059</created>
@@ -364,11 +369,18 @@
       <option name="project" value="LOCAL" />
       <updated>1512363656762</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Gitignore">
+      <created>1512363756002</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1512363756002</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="136041000" />
+    <option name="totallyTimeSpent" value="136129000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-9" y="-9" width="1938" height="1048" extended-state="6" />
@@ -446,7 +458,8 @@
     <MESSAGE value="Add menu" />
     <MESSAGE value="Add docs" />
     <MESSAGE value="Fix typo" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fix typo" />
+    <MESSAGE value="Gitignore" />
+    <option name="LAST_COMMIT_MESSAGE" value="Gitignore" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -961,8 +974,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="162">
-          <caret line="6" column="18" lean-forward="true" selection-start-line="6" selection-start-column="18" selection-end-line="6" selection-end-column="18" />
+        <state relative-caret-position="81">
+          <caret line="3" column="10" lean-forward="true" selection-start-line="3" selection-start-column="10" selection-end-line="3" selection-end-column="10" />
           <folding />
         </state>
       </provider>

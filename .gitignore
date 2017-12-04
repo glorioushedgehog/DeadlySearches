@@ -2,9 +2,7 @@
 *.class
 
 # Intellij
-.idea/**/workspace.xml
-.idea/**/tasks.xml
-.idea/dictionaries
+.idea/workspace.xml
 out/
 
 # Log file
