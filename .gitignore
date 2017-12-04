@@ -1,10 +1,6 @@
 # Compiled class file
 *.class
 
-# Intellij
-.idea/workspace.xml
-out/
-
 # Log file
 *.log
 
