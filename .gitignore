@@ -1,6 +1,12 @@
 # Compiled class file
 *.class
 
+# Intellij
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/dictionaries
+out/
+
 # Log file
 *.log
 
