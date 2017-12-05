@@ -371,7 +371,7 @@ public class Game extends JPanel implements ActionListener {
         // tell the user how to play, pause, and quit the game
         drawOverlay(g2d, "Use arrow keys to move", "Press enter to play", "Press escape to quit");
         // draw the title of the game in big text
-        Font font = new Font("Helvetica", Font.BOLD, viewHeight / 12);
+        Font font = new Font("Helvetica", Font.BOLD, viewHeight / 24);
         g2d.setFont(font);
         g2d.setColor(Parameters.textColor);
         // put the title on the map and space it two squares above the other text
@@ -391,7 +391,7 @@ public class Game extends JPanel implements ActionListener {
         g2d.fillRect(xOffset, yOffset, width * squareSize, height * squareSize);
         // base the font size on the view height so that the text will scale based on
         // different view sizes
-        Font font = new Font("Helvetica", Font.BOLD, viewHeight / 24);
+        Font font = new Font("Helvetica", Font.BOLD, viewHeight / 36);
         g2d.setFont(font);
         // draw the text
         g2d.setColor(Parameters.textColor);
