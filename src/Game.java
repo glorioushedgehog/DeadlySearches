@@ -391,7 +391,7 @@ public class Game extends JPanel implements ActionListener {
         g2d.fillRect(xOffset, yOffset, width * squareSize, height * squareSize);
         // base the font size on the view height so that the text will scale based on
         // different view sizes
-        Font font = new Font("Helvetica", Font.BOLD, viewHeight / 36);
+        Font font = new Font("Helvetica", Font.BOLD, viewHeight / 24);
         g2d.setFont(font);
         // draw the text
         g2d.setColor(Parameters.textColor);

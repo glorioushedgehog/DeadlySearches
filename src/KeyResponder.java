@@ -1,4 +1,3 @@
-import sun.plugin2.message.GetAppletMessage;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
